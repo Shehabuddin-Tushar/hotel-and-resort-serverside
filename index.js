@@ -92,6 +92,23 @@ async function run(){
               res.send(result);
        });
 
+       app.post("/addnewservice",async(req,res)=>{
+
+        const placename=req.body.name;
+      
+        const query ={name:placename};
+        const result = await services.findOne(query);
+        console.log(result)
+        if(result==null){
+          const value = await services.insertOne(req.body);
+          res.send("Service add successfully");
+         }else{
+            res.send("Its already added")
+         } 
+       })
+
+       
+
        
 
 
