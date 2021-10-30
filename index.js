@@ -49,6 +49,22 @@ async function run(){
            }
         })
 
+        app.get("/myorders",async(req,res)=>{
+           const search=req.query.search;
+           const query ={email:search};
+           const result = await booking.find(query).toArray();
+           res.json(result)
+        })
+
+        app.delete("/deletebooking/:id",async(req,res)=>{
+          const id=req.params.id;
+          console.log(id)
+          const query = { _id:ObjectId(id)};
+
+          const result = await booking.deleteOne(query);
+          res.json(result)
+        })
+
     }finally{
 
     }
