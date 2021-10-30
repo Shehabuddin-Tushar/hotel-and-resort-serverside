@@ -10,7 +10,7 @@ app.use(cors())
 const { MongoClient } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.lp6z6.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
-console.log(uri)
+
 
 async function run(){
    
@@ -20,6 +20,8 @@ async function run(){
         const services = database.collection("services");
         const booking = database.collection("bookingregister");
 
+
+       
         app.get("/services",async(req,res)=>{
 
             const result= services.find({});
@@ -63,7 +65,35 @@ async function run(){
 
           const result = await booking.deleteOne(query);
           res.json(result)
-        })
+        });
+
+        
+
+        app.get("/allbookingitems",async(req,res)=>{
+          const result = await booking.find({}).toArray();
+           res.json(result)
+        });
+
+        app.get("/mystatuschange/:id",async(req,res)=>{
+          const id= req.params.id;
+
+          const query = { _id:ObjectId(id)};
+          const data = await booking.findOne(query);
+          const mystatus=data.status;
+         
+              const filter = { _id:ObjectId(id) };
+              const options = { upsert: true };
+              const updateDoc = {
+                  $set: {
+                     status:mystatus=="Approved"?"Pending":"Approved",
+                   },
+                };
+              const result = await booking.updateOne(filter, updateDoc, options);
+              res.send(result);
+       });
+
+       
+
 
     }finally{
 
